@@ -13,6 +13,8 @@ export function Layout() {
           <nav className="nav">
             <NavLink to="/" end>Hesaplarım</NavLink>
             <NavLink to="/transfer">Transfer</NavLink>
+            <NavLink to="/market">Piyasa</NavLink>
+            <NavLink to="/portfolio">Portföy</NavLink>
             {isAdmin && <NavLink to="/deposit">Para Yatır</NavLink>}
           </nav>
           <div className="session">

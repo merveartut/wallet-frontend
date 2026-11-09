@@ -119,3 +119,79 @@ form.card { display: flex; flex-direction: column; gap: 0.9rem; }
 .selected-account { display: flex; flex-direction: column; gap: 0.2rem; padding: 0.7rem 0.9rem; border-radius: 8px; background: var(--primary-soft); }
 .selected-account .muted { margin: 0; font-size: 0.8rem; }
 .selected-account code { font-size: 0.85rem; word-break: break-all; }
+
+/* ───────── Kripto: piyasa ve portföy ───────── */
+:root { --up: #13854e; --down: #c62828; --up-soft: rgba(19, 133, 78, 0.14); --down-soft: rgba(198, 40, 40, 0.14); }
+@media (prefers-color-scheme: dark) { :root { --up: #4ccf8a; --down: #ff7a73; --up-soft: rgba(76, 207, 138, 0.16); --down-soft: rgba(255, 122, 115, 0.16); } }
+.up { color: var(--up); }
+.down { color: var(--down); }
+.small { font-size: 0.9rem; margin: 0; }
+.muted-inline { color: var(--muted); font-size: 0.85rem; }
+.nowrap { white-space: nowrap; }
+.container:has(.market), body:has(.market) .topbar-inner { max-width: 1240px; }
+
+.live { font-size: 0.8rem; font-weight: 600; color: var(--muted); display: inline-flex; align-items: center; gap: 0.4rem; white-space: nowrap; }
+.live::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+.live.on { color: var(--up); }
+.live.on::before { background: var(--up); animation: pulse 1.6s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+.market { display: grid; grid-template-columns: 250px minmax(0, 1fr) 300px; gap: 1rem; align-items: start; }
+@media (max-width: 1100px) { .market { grid-template-columns: 220px minmax(0, 1fr); } .market > :last-child { grid-column: 1 / -1; } }
+@media (max-width: 720px) { .market { grid-template-columns: 1fr; } }
+
+.ticker-list { padding: 0.5rem; display: flex; flex-direction: column; }
+.ticker { display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto auto; column-gap: 0.5rem; text-align: left; font: inherit; color: inherit; background: none; border: none; border-radius: 8px; padding: 0.55rem 0.7rem; cursor: pointer; }
+.ticker:hover { background: var(--primary-soft); }
+.ticker.selected { background: var(--primary-soft); box-shadow: inset 3px 0 0 var(--primary); }
+.ticker-symbol { font-weight: 700; }
+.ticker-price { grid-column: 2; grid-row: 1 / 3; align-self: center; font-variant-numeric: tabular-nums; font-weight: 600; padding: 0.1rem 0.3rem; border-radius: 4px; }
+.ticker-change { font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+.flash-up { animation: flash-up 1s ease-out; }
+.flash-down { animation: flash-down 1s ease-out; }
+@keyframes flash-up { from { background: var(--up-soft); color: var(--up); } to { background: transparent; } }
+@keyframes flash-down { from { background: var(--down-soft); color: var(--down); } to { background: transparent; } }
+
+.coin-detail { display: flex; flex-direction: column; gap: 0.75rem; min-width: 0; }
+.coin-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
+.coin-price { font-size: 1.8rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.ranges, .segmented { display: inline-flex; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 2px; }
+.ranges button, .segmented button { font: inherit; font-size: 0.85rem; font-weight: 600; border: none; background: none; color: var(--muted); padding: 0.3rem 0.65rem; border-radius: 6px; cursor: pointer; }
+.ranges button.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
+.coin-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.75rem; }
+.coin-stats > div { display: flex; flex-direction: column; gap: 0.15rem; }
+.coin-stats strong { font-variant-numeric: tabular-nums; font-size: 0.95rem; }
+
+.chart { display: flex; flex-direction: column; gap: 0.35rem; --chart: var(--up); }
+.chart.down { --chart: var(--down); }
+.chart-legend { display: flex; gap: 1rem; min-height: 1.4rem; align-items: baseline; flex-wrap: wrap; }
+.chart svg { width: 100%; height: 240px; display: block; cursor: crosshair; }
+.chart-line { fill: none; stroke: var(--chart); stroke-width: 2; }
+.chart-area { fill: var(--chart); opacity: 0.1; }
+.chart-trigger { stroke: var(--primary); stroke-width: 1.5; stroke-dasharray: 6 4; }
+.chart-cursor { stroke: var(--muted); stroke-width: 1; }
+.chart-empty { height: 264px; display: grid; place-items: center; color: var(--muted); }
+
+.order-form { display: flex; flex-direction: column; gap: 0.8rem; }
+.segmented { display: flex; }
+.segmented button { flex: 1; padding: 0.5rem; font-size: 0.95rem; }
+.segmented button.active.buy { background: var(--up); color: #fff; }
+.segmented button.active.sell { background: var(--down); color: #fff; }
+.hint-block { margin: -0.5rem 0 0; }
+.label-row { display: flex; justify-content: space-between; align-items: baseline; }
+.estimate { display: flex; justify-content: space-between; padding: 0.6rem 0.75rem; background: var(--bg); border-radius: 8px; font-size: 0.9rem; }
+.estimate strong { font-variant-numeric: tabular-nums; }
+
+.table-wrap { overflow-x: auto; }
+.table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.table th { text-align: left; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); font-weight: 600; padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--border); }
+.table td { padding: 0.6rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+.table tr:last-child td { border-bottom: none; }
+.table .num { text-align: right; font-variant-numeric: tabular-nums; }
+.status { font-size: 0.75rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 999px; background: var(--bg); color: var(--muted); white-space: nowrap; }
+.status-completed { background: var(--up-soft); color: var(--up); }
+.status-open, .status-executing { background: var(--primary-soft); color: var(--primary); }
+.status-rejected, .status-failed { background: var(--down-soft); color: var(--down); }
+.status-reason { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; max-width: 320px; }
+.total-card span { font-size: 0.9rem; font-weight: 600; }
+.owned { color: var(--primary); font-size: 0.6rem; margin-left: 0.35rem; vertical-align: middle; }

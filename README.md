@@ -47,10 +47,14 @@ Tarayıcı tüm istekleri kendi adresine (`localhost:5173/api/...`) gönderir; V
 | Hesaplarım: bakiyeler, toplamlar, yeni hesap açma | `/` | Giriş yapmış |
 | Para transferi | `/transfer` | Giriş yapmış |
 | Para yatırma (herhangi bir hesaba) | `/deposit` | Yalnızca ADMIN |
+| Piyasa: canlı kripto fiyatları, grafik, al/sat (piyasa, limit, stop), bekleyen emirler | `/market` | Giriş yapmış |
+| Portföy: pozisyonlar, canlı değer, kâr/zarar, emir geçmişi | `/portfolio` | Giriş yapmış |
 
 - **Asenkron cüzdan:** Kayıttan sonra cüzdan Kafka üzerinden birkaç saniye içinde açılır. Panel, hesap görünene kadar 2 saniyede bir yeniden sorgular.
 - **Oturum:** JWT `localStorage`'da tutulur, her isteğe `Authorization: Bearer` olarak eklenir. Token süresi dolunca (30 dk) ya da backend 401 dönünce oturum kapanır ve giriş sayfasında nedeni gösterilir.
 - **Hatalar:** Backend'in RFC 9457 Problem Details cevapları okunur. `detail` mesajı formun üstünde, `errors` listesindeki alan hataları ilgili alanın altında gösterilir.
+- **Canlı fiyatlar:** `usePriceStream` hook'u backend'in Server-Sent Events akışını (`/api/crypto/prices/stream`) `EventSource` ile dinler; bağlantı koparsa tarayıcı kendiliğinden yeniden bağlanır. Fiyat yükselince/düşünce satır yeşil/kırmızı yanıp söner. Grafik bağımlılıksız SVG'dir (`src/crypto/PriceChart.tsx`).
+- **Kripto alım-satım:** Gerçek değildir; TRY hesabındaki sanal bakiye kullanılır. Emir sonucu `status` alanından okunur: `COMPLETED`, `OPEN` (limit/stop bekliyor), `REJECTED` (ör. yetersiz bakiye), `FAILED` (satış tutarı yatırılamadı, coin'ler iade edildi), `EXECUTING` (cüzdan servisinden cevap gelmedi, birkaç saniyede kendiliğinden tamamlanır). Bekleyen emirler arka planda tetiklendiği için emir ve portföy listesi 5 sn'de bir yenilenir. Adetler 8 ondalık hassasiyetle string olarak gönderilir. Satışta formdaki **Satılacak coin** listesi elinizdeki coin'leri satılabilir adetleriyle gösterir; fiyat listesinde elinizde olan coin'ler ● ile işaretlidir.
 - **Rol kontrolü:** ADMIN menüsü ve sayfası yalnızca arayüz kolaylığıdır. Asıl yetki kontrolünü backend yapar.
 
 ## Klasör yapısı
@@ -59,7 +63,8 @@ Tarayıcı tüm istekleri kendi adresine (`localhost:5173/api/...`) gönderir; V
 src/
 ├── api/
 │   ├── client.ts        # fetch sarmalayıcı: token ekleme, hata → ApiError, 401 → oturumu kapat
-│   └── walletApi.ts     # Endpoint'ler ve tipler (User, Account, ...)
+│   ├── walletApi.ts     # Endpoint'ler ve tipler (User, Account, ...)
+│   └── cryptoApi.ts     # crypto-service: fiyatlar, emirler, portföy
 ├── auth/
 │   ├── AuthContext.tsx  # Oturum durumu: login, logout, token süresi takibi
 │   ├── jwt.ts           # Token içeriğini okuma (imza doğrulaması backend'de)
@@ -69,7 +74,8 @@ src/
 │   ├── RouteGuards.tsx  # RequireAuth, RequireAdmin, GuestOnly
 │   ├── useAccounts.ts   # Hesapları yükleyen hook
 │   └── ui.tsx           # Alert, Field, SelectField, SubmitButton
-├── pages/               # Login, Register, Dashboard, Transfer, Deposit
+├── crypto/              # usePriceStream (SSE), useCryptoAccount, PriceChart, OrderForm, OrderTable, format
+├── pages/               # Login, Register, Dashboard, Transfer, Deposit, Market, Portfolio
 ├── utils/format.ts      # Para biçimlendirme (tr-TR), tutar ayrıştırma
 ├── App.tsx              # Route tanımları
 ├── main.tsx             # Giriş noktası

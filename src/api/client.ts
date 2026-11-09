@@ -43,7 +43,7 @@ export function setUnauthorizedHandler(handler: (() => void) | null) {
 }
 
 interface RequestOptions {
-  method?: 'GET' | 'POST';
+  method?: 'GET' | 'POST' | 'DELETE';
   body?: unknown;
   query?: Record<string, string | number>;
   /** false ise Authorization header'ı eklenmez (giriş, kayıt) */
